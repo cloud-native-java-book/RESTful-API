@@ -33,7 +33,7 @@ public class CustomerProfilePhotoService {
           File file = new File(this.rootFile, Arrays.toString(this.encode(customer.getId())));
           return new FileSystemResource(file);
         }).orElseThrow(
-            () -> new CustomerNotFoundException("No Customer found with Id: " + customerId));
+            () -> new CustomerNotFoundException(customerId));
   }
 
   public Long uploadPhoto(Long customerId, MultipartFile photo) {
@@ -42,7 +42,7 @@ public class CustomerProfilePhotoService {
           this.writeBinaryDateByCustomer(photo, customer.getId());
           return customer.getId();
         }).orElseThrow(
-            () -> new CustomerNotFoundException("No Customer found with Id: " + customerId));
+            () -> new CustomerNotFoundException(customerId));
   }
 
   private void writeBinaryDateByCustomer(MultipartFile photo, Long customerId) {

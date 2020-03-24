@@ -17,3 +17,25 @@ HATEOAS.
 #### Content Negotiation:
 Content Negotiation is one of the most powerful features of HTTP: the same service may serve clients
 that accept different protocols.
+
+#### Little Bite of Servlet Container Terminology:
+In a typical Servlet Container implementation (Like Apache tomcat, ...) each http request is handled
+via a thread that is obtained from that Servlet Container's thread pool.
+
+Threads pool are necessary to control the amount of the threads that are being executed simultaneously.
+
+``` 
+In a regular basis, each thread consumes ~1MB of memory just to allocate a single thread stack, 
+so 1000 simultaneous requests could use ~1GB of memory only for the thread stacks. Therefore, 
+thread pool comes as a solution to limit the amount of threads being executed, fitting the application
+to a scenario where it doesn’t throw an OutOfMemoryError.
+```
+
+#### Error Handling:
+@ControllerAdvie is a special type of component that may introduce behavior (and respond to exceptions) for
+any number of controllers. They are natural place to stick centralized @ExceptionHandler handlers.
+
+
+### Useful Resources:
+* [Using Asynchronuous Calls With Spring MVC](https://adrianobrito.github.io/2018/01/11/using-callable-responses-in-spring-mvc/)
+<!-- * [the difference between Callable and WebAsyncTask in Spring MVC]() -->

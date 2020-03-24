@@ -36,18 +36,30 @@ public class CustomerProfilePhotoController {
     return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(customerPhoto);
   }
 
-  @RequestMapping(method = {RequestMethod.POST, RequestMethod.PUT}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  /**
+   * It could be an intensive IO Operation, for this reason, we decided to do it the non-blocking
+   * way, using Asynchronous Calls, note that is recommended to use only the heavy operation inside
+   * the callable lambda - {@link Callable}.
+   *
+   * @param id    of the customer's profile.
+   * @param photo to be uploaded.
+   * @return a response with the HTTP Status.
+   */
+  @RequestMapping(method = {RequestMethod.POST,
+      RequestMethod.PUT}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public Callable<ResponseEntity<?>> uploadImage(@PathVariable Long id,
       @RequestParam MultipartFile photo) {
     log.info(
-        String.format("====== upload start: /customer/%s/photo (%S bytes)", id, photo.getSize()));
+        String.format("====== upload start: /customer/%s/photo (%S bytes) ======", id,
+            photo.getSize()));
+    return () -> {
+      Long customerId = this.customerProfilePhotoService.uploadPhoto(id, photo);
 
-    Long customerId = this.customerProfilePhotoService.uploadPhoto(id, photo);
+      URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("{id}")
+          .buildAndExpand(customerId).toUri();
 
-    URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("{id}")
-        .buildAndExpand(customerId).toUri();
-
-    return () -> ResponseEntity.created(location).build();
+      return ResponseEntity.created(location).build();
+    };
   }
 
 }

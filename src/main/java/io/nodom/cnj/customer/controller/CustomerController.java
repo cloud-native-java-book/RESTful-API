@@ -1,6 +1,7 @@
 package io.nodom.cnj.customer.controller;
 
 
+import io.nodom.cnj.customer.exception.CustomerNotFoundException;
 import io.nodom.cnj.customer.model.Customer;
 import io.nodom.cnj.customer.service.CustomerService;
 import java.net.URI;
@@ -46,7 +47,9 @@ public class CustomerController {
   @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE,
       MediaType.APPLICATION_XML_VALUE})
   public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-    return ResponseEntity.ok(this.customerService.findCustomerById(id));
+    Customer customer = this.customerService.findCustomerById(id)
+        .orElseThrow(() -> new CustomerNotFoundException(id));
+    return ResponseEntity.ok(customer);
   }
 
   @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})

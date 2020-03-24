@@ -23,9 +23,8 @@ public class CustomerService {
     return this.customerRepository.findAll();
   }
 
-  public Customer findCustomerById(Long customerId) {
-    return this.customerRepository.findById(customerId)
-        .orElseThrow(() -> new CustomerNotFoundException("No Customer with Id: " + customerId));
+  public Optional<Customer> findCustomerById(Long customerId) {
+    return this.customerRepository.findById(customerId);
   }
 
   public Customer createCustomer(@Valid Customer customer) {
@@ -35,7 +34,7 @@ public class CustomerService {
 
   public Customer deleteCustomerById(Long id) {
     Customer customer = this.customerRepository.findById(id)
-        .orElseThrow(() -> new CustomerNotFoundException("No Customer With Id" + id));
+        .orElseThrow(() -> new CustomerNotFoundException(id));
 
     this.customerRepository.delete(customer);
     return customer;
@@ -50,6 +49,6 @@ public class CustomerService {
           existingCustomer.setLastName(customer.getLastName());
           this.customerRepository.save(existingCustomer);
           return customer;
-        }).orElseThrow(() -> new CustomerNotFoundException("Customer Not Found"));
+        }).orElseThrow(() -> new CustomerNotFoundException(customer.getId()));
   }
 }
